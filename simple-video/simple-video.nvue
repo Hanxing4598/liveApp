@@ -1,0 +1,117 @@
+<template>
+	<view class="simple-video">
+		<video v-if="refId != ''" :ref="`video_${refId}`" :id="`video_${refId}`" :src="src" @play="playIng" :loop="loop"
+		 :enable-progress-gesture="false" :page-gesture="false" :initial-time="0" :controls="false" :show-fullscreen-btn="false"
+		 :show-center-play-btn="false" class="video" :style="boxStyle" :poster="poster" :objectFit="objectFit" @ended="endedPlay" @timeupdate="timeupdate"></video>
+		<!-- <cover-view class="slider-view">
+			<chunLei-slider :max="duration" :value="time" :style="{width:`${380}px`}" :screenLeft="120" :width="380" @change="changeCurrent"></chunLei-slider>
+		</cover-view> -->
+	</view>
+</template>
+
+<script>
+	import chunLeiSlider from './chunLei-slider/chunLei-slider.nvue';
+	export default {
+		watch: {
+			state(newValue, oldValue) {
+				//var  videoCtx = uni.createVideoContext(`video_${this.refId}`, this);
+				var videoCtx = this.$refs[`video_${this.refId}`];
+				switch (newValue) {
+					case 'play':
+					    videoCtx.seek(0);
+						videoCtx.play();
+						break;
+					case 'continue':
+						videoCtx.play();
+						break;
+					case 'pause':
+						videoCtx.pause();
+						break;
+					case 'stop':
+						videoCtx.pause();
+						break;
+					default:
+						break;
+				}
+			}
+		},
+		components: {
+			chunLeiSlider
+		},
+		created() {
+			// console.log(this.objectFit);
+		},
+		props: {
+			loop:false,
+			objectFit: {
+				type: String
+			},
+			state: {
+				type: Boolean,
+				default () {
+					return false;
+				}
+			},
+			src: {
+				type: String,
+				default () {
+					return '';
+				}
+			},
+			poster: {
+			    type: String,
+			    default () {
+			        return '';
+			    }
+			},
+			boxStyle: {
+				type: Object,
+				default () {
+					return {};
+				}
+			},
+			refId: {
+				type: String,
+				default () {
+					return '';
+				}
+			}
+		},
+
+		methods: {
+			changeCurrent(e){
+				var videoCtx = this.$refs[`video_${this.refId}`];
+				this.time = e.detail.value
+				videoCtx.seek(this.time)
+			},
+			timeupdate(event){
+				this.duration = event.detail.duration
+				if(this.time>=event.detail.duration) this.time=0
+				this.time = event.detail.currentTime
+				this.$emit('timeupdate',this.time)
+			},
+			endedPlay(e) {
+				this.$emit('ended', e);
+			}
+		}
+	};
+</script>
+
+<style>
+	.simple-video {
+		background-color: #000000;
+		position: relative;
+		flex: 1;
+	}
+
+	.video {
+		width: 750rpx;
+		flex: 1;
+	}
+	.slider-view{
+		position: absolute;
+		left: 0;
+		bottom: 100px;
+		width: 750rpx;
+	}
+</style>

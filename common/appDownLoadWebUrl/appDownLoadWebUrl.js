@@ -1,0 +1,1 @@
+export default 'http://app.zqxl.vip/p6jc?from=singlemessage&isappinstalled=0'
